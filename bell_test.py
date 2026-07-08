@@ -13,22 +13,28 @@ The CHSH Bell Inequality:
 
 How to run:
     python -m venv .venv
-    .venv/Scripts/Activate.ps1   # Windows
-    source .venv/bin/activate    # Mac/Linux
+    source .venv/bin/activate          # macOS / Linux
+    .venv\\Scripts\\Activate.ps1       # Windows PowerShell
     pip install -r requirements.txt
     python bell_test.py
 
 Outputs:
     results/bell_correlation_curve.png  — cosine correlation + S sweep
-    results/bell_bloch_sphere.png       — density matrix portrait
+    results/bell_bloch_sphere.png       — 3-D density matrix portrait
     results/bell_results.txt            — numerical S values
 
 Expected results:
-    Simulator:  S ≈ 2.80  (should be 99%+ of theoretical max 2.828)
-    Hardware:   S ≈ 2.60  (still > 2.000 despite noise)
+    Noiseless simulator : S ≈ 2.806  (99%+ of theoretical max 2.828)
+    FakeFez noise model : S ≈ 2.668  (still well above classical limit 2.000)
 
-Author:  [your name]
+Real hardware (ibm_marrakesh, verified): S = 2.522  (21.5σ Bell violation)
+See bell_test_hardware.py to run on a real IBM quantum processor.
+
+Author:  Milad Love
 License: Apache 2.0
+
+Disclaimer: This is a personal learning project. Views and code are my own
+and do not represent IBM.
 """
 
 import os
@@ -263,7 +269,7 @@ with open("results/bell_results.txt", "w") as f:
 print("\nSaved: results/bell_results.txt")
 
 # ── Step 9: Plot correlation curve + S sweep ────────────────────────────────────
-print("Step 8: Generating plots...")
+print("Step 9: Generating plots...")
 fig, axes = plt.subplots(1, 2, figsize=(16, 7))
 fig.patch.set_facecolor("#0a0e1a")
 for ax in axes:
@@ -332,6 +338,68 @@ plt.savefig("results/bell_correlation_curve.png", dpi=200,
             bbox_inches="tight", facecolor="#0a0e1a")
 plt.close()
 print("  Saved: results/bell_correlation_curve.png")
+
+# ── Step 10: Density matrix portrait ──────────────────────────────────────────
+print("Step 10: Generating density matrix portrait...")
+
+basis_labels = ["|00⟩", "|01⟩", "|10⟩", "|11⟩"]
+x_pos = np.arange(4)
+y_pos = np.arange(4)
+xx, yy = np.meshgrid(x_pos, y_pos)
+
+fig = plt.figure(figsize=(14, 6))
+fig.patch.set_facecolor("#0a0e1a")
+
+# LEFT: Bell state |Φ⁺⟩ — entangled
+ax1 = fig.add_subplot(121, projection="3d")
+ax1.set_facecolor("#0d1220")
+dz = rho_bell.flatten()
+colors_3d = ["#42be65" if i in (0, 3, 12, 15) else "#4d85ff" for i in range(16)]
+ax1.bar3d(xx.flatten(), yy.flatten(), np.zeros(16), 0.7, 0.7, dz,
+          color=colors_3d, alpha=0.88, shade=True)
+ax1.set_xticks(x_pos + 0.35); ax1.set_xticklabels(basis_labels, color="white", fontsize=9)
+ax1.set_yticks(y_pos + 0.35); ax1.set_yticklabels(basis_labels, color="white", fontsize=9)
+ax1.set_zlabel("|ρ|", color="white", fontsize=10)
+ax1.tick_params(colors="white")
+ax1.set_title("Bell State |Φ⁺⟩ — Entangled\nDensity Matrix",
+              color="white", fontsize=11, pad=10)
+ax1.xaxis.pane.fill = False; ax1.yaxis.pane.fill = False; ax1.zaxis.pane.fill = False
+for axis in (ax1.xaxis, ax1.yaxis, ax1.zaxis):
+    axis.line.set_color("#2a3550")
+ax1.text2D(0.05, 0.88,
+           "Green: diagonal (probabilities)\nBlue: off-diagonal (entanglement)",
+           transform=ax1.transAxes, color="white", fontsize=8.5,
+           bbox=dict(facecolor="#161b2e", edgecolor="#2a3550", alpha=0.8))
+
+# RIGHT: Separable state (H on q0 only) — NOT entangled
+ax2 = fig.add_subplot(122, projection="3d")
+ax2.set_facecolor("#0d1220")
+dz2 = rho_sep.flatten()
+colors_sep = ["#ff832b" if i in (0, 2, 8, 10) else "#6f6f6f" for i in range(16)]
+ax2.bar3d(xx.flatten(), yy.flatten(), np.zeros(16), 0.7, 0.7, dz2,
+          color=colors_sep, alpha=0.88, shade=True)
+ax2.set_xticks(x_pos + 0.35); ax2.set_xticklabels(basis_labels, color="white", fontsize=9)
+ax2.set_yticks(y_pos + 0.35); ax2.set_yticklabels(basis_labels, color="white", fontsize=9)
+ax2.set_zlabel("|ρ|", color="white", fontsize=10)
+ax2.tick_params(colors="white")
+ax2.set_title("Separable State — NOT Entangled\nDensity Matrix for comparison",
+              color="white", fontsize=11, pad=10)
+ax2.xaxis.pane.fill = False; ax2.yaxis.pane.fill = False; ax2.zaxis.pane.fill = False
+for axis in (ax2.xaxis, ax2.yaxis, ax2.zaxis):
+    axis.line.set_color("#2a3550")
+ax2.text2D(0.05, 0.88,
+           "No off-diagonal bars\n= no entanglement",
+           transform=ax2.transAxes, color="white", fontsize=8.5,
+           bbox=dict(facecolor="#161b2e", edgecolor="#2a3550", alpha=0.8))
+
+fig.suptitle("Entanglement vs Separability: Density Matrix Portrait\n"
+             "Off-diagonal bars are the mathematical fingerprint of entanglement",
+             color="white", fontsize=13, fontweight="bold")
+plt.tight_layout(pad=2.0)
+plt.savefig("results/bell_bloch_sphere.png", dpi=200,
+            bbox_inches="tight", facecolor="#0a0e1a")
+plt.close()
+print("  Saved: results/bell_bloch_sphere.png")
 
 # ── Summary ────────────────────────────────────────────────────────────────────
 print()

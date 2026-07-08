@@ -1,0 +1,6 @@
+# Extra dependencies for real IBM Quantum hardware runs
+# Only needed if you want to run bell_test_hardware.py
+# Base dependencies (qiskit, numpy, matplotlib) are in requirements.txt
+
+qiskit-ibm-runtime>=0.47.0
+python-dotenv>=1.0.0

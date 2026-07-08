@@ -1,0 +1,36 @@
+BELL TEST EXPERIMENT RESULTS
+============================================================
+
+CHSH INEQUALITY
+----------------------------------------
+Classical physics (hidden variables) : |S| <= 2.0000
+Quantum mechanics (maximum)          : |S| <= 2.8284
+
+MEASURED S VALUES AT STANDARD CHSH ANGLES
+----------------------------------------
+Noiseless simulator : S = +2.8062  (violation: +0.8062)
+FakeFez noise model : S = +2.6675  (violation: +0.6675)
+Theory maximum      : S = +2.8284
+
+INTERPRETATION
+----------------------------------------
+A |S| > 2 proves that no classical hidden-variable theory
+can explain the observed correlations.
+The qubits are genuinely entangled.
+
+The 2022 Nobel Prize in Physics was awarded to Aspect,
+Clauser, and Zeilinger for performing this test with photons.
+This experiment replicates the same mathematics on IBM
+superconducting qubits (ibm_fez hardware noise model).
+
+NOISE IMPACT
+----------------------------------------
+Simulator S  : +2.8062
+Hardware S   : +2.6675
+Noise cost   : 0.1387
+Hardware still violates classical limit: YES
+
+SWEEP RESULTS
+----------------------------------------
+Max |S| (simulator): 2.8120
+Max |S| (hardware) : 2.6353
