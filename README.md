@@ -260,15 +260,6 @@ This repository uses a **personal GitHub account** with personal email as the
 commit author. It is licensed under **Apache 2.0**, which is permissive
 (use, modify, distribute, commercially — with attribution).
 
-IBM employees sharing personal projects on public GitHub should:
-- Use their personal account (not IBM Enterprise GitHub)
-- Use personal email in git config: `git config user.email "you@personal.com"`
-- Include the disclaimer: *"This is a personal learning project. Views and code
-  are my own and do not represent IBM."*
-- Never include proprietary IBM code, internal data, or credentials
-- Review IBM's [Open Source Participation Guidelines](https://github.com/IBM/open-source-guidelines)
-  when in doubt
-
 ---
 
 ## Dependencies
